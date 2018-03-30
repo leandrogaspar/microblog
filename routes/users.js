@@ -40,8 +40,15 @@ function deleteUser (req, res) {
 }
 
 function login (req, res) {
-  console.log(req)
-  res.send('todo')
+  const body = _.pick(req.body, ['email', 'password'])
+
+  User.findByCredentials(body.email, body.password)
+    .then((user) => {
+      res.status(200).send(user)
+    })
+    .catch((e) => {
+      res.status(401).send(e.message)
+    })
 }
 
 function logout (req, res) {

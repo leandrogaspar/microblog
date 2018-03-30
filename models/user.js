@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 
+const { hashPassword, comparePassword } = require('../util')
+
 var UserSchema = new mongoose.Schema({
   name: {
     firstName: {
@@ -38,6 +40,34 @@ var UserSchema = new mongoose.Schema({
   }
 })
 
+UserSchema.statics.findByCredentials = async function (email, password) {
+  var User = this
+
+  const user = await User.findOne({ email })
+  if (!user) throw new Error('Invalid email/password')
+
+  const passwordMatch = await comparePassword(password, user.password)
+  if (passwordMatch) {
+    return user
+  } else {
+    throw new Error('Invalid email/password')
+  }
+}
+
+UserSchema.pre('save', function (next) {
+  var user = this
+
+  if (!user.isModified('password')) {
+    next()
+  }
+
+  hashPassword(user.password)
+    .then((hash) => {
+      user.password = hash
+      next()
+    })
+})
+
 var User = mongoose.model('User', UserSchema)
 
-module.exports = {User}
+module.exports = { User }
