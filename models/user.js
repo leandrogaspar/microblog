@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
+const _ = require('lodash')
 
 const { hashPassword, comparePassword } = require('../util')
 
@@ -39,6 +40,12 @@ var UserSchema = new mongoose.Schema({
     minlength: 8
   }
 })
+
+UserSchema.methods.toJSON = function () {
+  var user = this
+
+  return _.pick(user, ['name', 'birthday', 'email'])
+}
 
 UserSchema.statics.findByCredentials = async function (email, password) {
   var User = this

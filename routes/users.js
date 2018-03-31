@@ -47,7 +47,7 @@ function login (req, res) {
       res.status(200).send(user)
     })
     .catch((e) => {
-      res.status(401).send(e.message)
+      res.status(401).send()
     })
 }
 
