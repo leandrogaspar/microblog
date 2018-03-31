@@ -1,5 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const helmet = require('helmet')
 
 const db = require('./db/mongoose')
 
@@ -11,6 +12,7 @@ db.connect()
     console.log(`Mongoose connected to MongoDB`)
   })
 
+app.use(helmet())
 app.use(bodyParser.json())
 app.use(require('./routes'))
 
