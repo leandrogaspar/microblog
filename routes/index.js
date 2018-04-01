@@ -1,9 +1,7 @@
 const router = require('express').Router()
 
-router.use('/users', require('./users'))
+const apiVersion = 'v0'
 
-router.get('/', function (req, res) {
-  res.send('Hello world!')
-})
+router.use(`/api${apiVersion}/users`, require('./users'))
 
 module.exports = router

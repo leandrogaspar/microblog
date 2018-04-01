@@ -6,6 +6,7 @@
   "scripts": {
     "nodemon": "node ./node_modules/nodemon/bin/nodemon",
     "test": "export NODE_ENV=test || SET NODE_ENV=test && node ./node_modules/jasmine/bin/jasmine",
+    "test-watch": "export NODE_ENV=test || SET NODE_ENV=test && node ./node_modules/nodemon/bin/nodemon ./node_modules/jasmine/bin/jasmine",
     "eslint": "node ./node_modules/eslint/bin/eslint"
   },
   "repository": {
