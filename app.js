@@ -12,6 +12,10 @@ db.connect()
   .then(() => {
     console.log(`Mongoose connected to MongoDB`)
   })
+  .catch((e) => {
+    console.log('Could not connect to MongoDB', e)
+    process.exit(1)
+  })
 
 app.use(helmet())
 app.use(bodyParser.json())
@@ -20,3 +24,5 @@ app.use(require('./routes'))
 app.listen(port, () => {
   console.log(`Listening to port ${port}`)
 })
+
+module.exports = { app }
