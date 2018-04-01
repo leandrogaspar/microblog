@@ -4,9 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "nodemon": "node ./node_modules/nodemon/bin/nodemon.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "eslint": "node ./node_modules/eslint/bin/eslint.js"
+    "nodemon": "node ./node_modules/nodemon/bin/nodemon",
+    "test": "node ./node_modules/jasmine/bin/jasmine",
+    "eslint": "node ./node_modules/eslint/bin/eslint"
   },
   "repository": {
     "type": "git",
@@ -29,11 +29,12 @@
   },
   "devDependencies": {
     "eslint": "^4.19.1",
-    "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.10.0",
+    "eslint-plugin-jasmine": "^2.9.3",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.7.0",
     "eslint-plugin-standard": "^3.0.1",
+    "jasmine": "^3.1.0",
     "nodemon": "^1.17.2"
   }
 }
