@@ -1,8 +1,8 @@
 const axios = require('axios')
 
-const { User } = require('../models/user')
+const { User } = require('../../models/user')
 
-require('../app')
+require('../../app')
 
 const API_URL = 'http://localhost:3000/apiv0/users'
 
@@ -56,7 +56,7 @@ beforeEach(() => {
 })
 
 describe('POST /users', () => {
-  it('POST /users returns statusCode 200 with user on body witouth password field', (done) => {
+  it('POST /users returns statusCode 200 with user on body without password field', (done) => {
     axios.post(API_URL, validUser)
       .then((response) => {
         const user = response.data
