@@ -1,11 +1,10 @@
 var mongoose = require('mongoose')
 
-const mongoHost = process.env.MONGODB_URI
-
 mongoose.Promise = global.Promise
 
 function connect () {
-  return mongoose.connect(mongoHost)
+  console.log(`Connecting to db URL ${process.env.MONGODB_URI}`)
+  return mongoose.connect(process.env.MONGODB_URI)
 }
 
 function disconnect () {
