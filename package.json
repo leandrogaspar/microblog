@@ -7,7 +7,7 @@
     "nodemon": "node ./node_modules/nodemon/bin/nodemon",
     "test": "export NODE_ENV=test || SET NODE_ENV=test && node ./node_modules/jasmine/bin/jasmine",
     "test-watch": "node ./node_modules/nodemon/bin/nodemon --exec 'npm test'",
-    "eslint": "node ./node_modules/eslint/bin/eslint"
+    "eslint": "node ./node_modules/eslint/bin/eslint ."
   },
   "repository": {
     "type": "git",

@@ -56,7 +56,7 @@ beforeEach(() => {
 })
 
 describe('POST /users', () => {
-  it('POST /users returns statusCode 200 with user on body without password field', (done) => {
+  it('returns statusCode 200 with user on body without password field', (done) => {
     axios.post(API_URL, validUser)
       .then((response) => {
         const user = response.data
@@ -71,7 +71,7 @@ describe('POST /users', () => {
       })
   })
 
-  it('POST /users fails with statusCode 400 if email is already in use', (done) => {
+  it('fails with statusCode 400 if email is already in use', (done) => {
     axios.post(API_URL, seed[0])
       .then((response) => {
         done().fail(response)
@@ -82,7 +82,7 @@ describe('POST /users', () => {
       })
   })
 
-  it('POST /users fails with statusCode 400 if email is invalid', (done) => {
+  it('fails with statusCode 400 if email is invalid', (done) => {
     validUser.email = 'nfainofina-f,sa'.birthday = 'nfainofina-f,sa'
     axios.post(API_URL, validUser)
       .then((response) => {
@@ -94,7 +94,7 @@ describe('POST /users', () => {
       })
   })
 
-  it('POST /users fails with statusCode 400 if birthday is invalid', (done) => {
+  it('fails with statusCode 400 if birthday is invalid', (done) => {
     validUser.birthday = 'nfainofina-f,sa'
     axios.post(API_URL, validUser)
       .then((response) => {
@@ -106,7 +106,7 @@ describe('POST /users', () => {
       })
   })
 
-  it('POST /users fails with statusCode 400 if password is smaller then 8,', (done) => {
+  it('fails with statusCode 400 if password < 8,', (done) => {
     validUser.password = '1234567'
     axios.post(API_URL, validUser)
       .then((response) => {

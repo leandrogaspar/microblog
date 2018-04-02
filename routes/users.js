@@ -12,7 +12,12 @@ router.post('/login', login)
 router.post('/logout', logout)
 
 function createUser (req, res) {
-  const body = _.pick(req.body, ['name.firstName', 'name.lastName', 'birthday', 'email', 'password'])
+  const body = _.pick(req.body, [
+    'name.firstName',
+    'name.lastName',
+    'birthday',
+    'email',
+    'password'])
   const user = new User(body)
 
   user.save()
