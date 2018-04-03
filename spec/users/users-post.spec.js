@@ -1,10 +1,9 @@
-const axios = require('axios')
+const request = require('supertest')
 
 const { User } = require('../../models/user')
+const server = require('../../server')
 
-require('../../app')
-
-const API_URL = 'http://localhost:3000/apiv0/users'
+const API_URL = '/apiv0/users'
 
 var validUser
 const seed = [
@@ -28,92 +27,107 @@ const seed = [
   }
 ]
 
-async function seedUsers () {
-  await User.remove({})
-  await User.insertMany(seed)
-}
-
-beforeEach((done) => {
-  seedUsers()
-    .then(() => {
-      done()
-    })
-    .catch((e) => {
-      done.fail(e)
-    })
-})
-
-beforeEach(() => {
-  validUser = {
-    name: {
-      firstName: 'User',
-      lastName: 'Valid'
-    },
-    birthday: new Date(1990, 1, 9).getTime(),
-    email: 'testabcd123@test.com',
-    password: 'abcd1234'
-  }
-})
-
 describe('POST /users', () => {
-  it('returns statusCode 200 with user on body without password field', (done) => {
-    axios.post(API_URL, validUser)
-      .then((response) => {
-        const user = response.data
+  beforeEach((done) => {
+    validUser = {
+      name: {
+        firstName: 'User',
+        lastName: 'Valid'
+      },
+      birthday: new Date(1990, 1, 9).getTime(),
+      email: 'testabcd123@test.com',
+      password: 'abcd1234'
+    }
+
+    // TODO: this is failing in test-watch. Investigate it!
+    User.remove({})
+      .then((res) => {
+        const userOne = new User(seed[0]).save()
+        const userTwo = new User(seed[1]).save()
+        return Promise.all([userOne, userTwo])
+      })
+      .then(() => done())
+      .catch((e) => {
+        console.log(e)
+        // E11000 duplicate key error collection:
+        // TestDB.users index: email_1 dup key
+        done.fail('Could not prepare DB')
+      })
+  })
+
+  it('returns statusCode 200 with body obj without password field', (done) => {
+    request(server)
+      .post(API_URL)
+      .send(validUser)
+      .expect(200)
+      .expect((response) => {
+        const user = response.body
+        expect(user).toBeDefined()
         expect(user.name).toEqual(validUser.name)
         expect(user.birthday).toBe(validUser.birthday)
         expect(user.email).toBe(validUser.email)
         expect(user.password).toBeUndefined()
-        done()
       })
-      .catch((e) => {
-        done.fail(e)
+      .end((err, res) => {
+        if (err) return done.fail(err)
+
+        // todo search the database
+        done()
       })
   })
 
   it('fails with statusCode 400 if email is already in use', (done) => {
-    axios.post(API_URL, seed[0])
-      .then((response) => {
-        done().fail(response)
-      })
-      .catch((e) => {
-        expect(e.response.status).toBe(400)
+    request(server)
+      .post(API_URL)
+      .set('Accept', 'application/json')
+      .send(seed[0])
+      .expect(400)
+      .end((err, res) => {
+        if (err) return done.fail(err)
+
+        // todo search the database
         done()
       })
   })
 
   it('fails with statusCode 400 if email is invalid', (done) => {
-    validUser.email = 'nfainofina-f,sa'.birthday = 'nfainofina-f,sa'
-    axios.post(API_URL, validUser)
-      .then((response) => {
-        done().fail(response)
-      })
-      .catch((e) => {
-        expect(e.response.status).toBe(400)
+    validUser.email = 'nfainofina-f,sa'
+    request(server)
+      .post(API_URL)
+      .send(validUser)
+      .expect(400)
+      .end((err, res) => {
+        if (err) return done.fail(err)
+
+        // todo search the database
         done()
       })
   })
 
   it('fails with statusCode 400 if birthday is invalid', (done) => {
     validUser.birthday = 'nfainofina-f,sa'
-    axios.post(API_URL, validUser)
-      .then((response) => {
-        done().fail(response)
-      })
-      .catch((e) => {
-        expect(e.response.status).toBe(400)
+    request(server)
+      .post(API_URL)
+      .send(validUser)
+      .expect(400)
+      .end((err, res) => {
+        if (err) return done.fail(err)
+
+        // todo search the database
         done()
       })
   })
 
   it('fails with statusCode 400 if password < 8,', (done) => {
     validUser.password = '1234567'
-    axios.post(API_URL, validUser)
-      .then((response) => {
-        done().fail(response)
-      })
-      .catch((e) => {
-        expect(e.response.status).toBe(400)
+    request(server)
+      .post(API_URL)
+      .send(validUser)
+      .expect(400)
+      .end((err, res) => {
+        if (err) return done(err)
+
+        // todo search the database
         done()
       })
   })
