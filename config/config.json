@@ -1,10 +1,12 @@
 {
   "test": {
     "PORT": 3000,
-    "MONGODB_URI": "mongodb://localhost:27017/TestDB"
+    "MONGODB_URI": "mongodb://localhost:27017/TestDB",
+    "JWT_KEY": "TEST_DO_NOT_USE_ME_IN_PRODUCTION*"
   },
   "development": {
     "PORT": 3000,
-    "MONGODB_URI": "mongodb://localhost:27017/DevelopmentDB"
+    "MONGODB_URI": "mongodb://localhost:27017/DevelopmentDB",
+    "JWT_KEY": "DEV_DO_NOT_USE_ME_IN_PRODUCTION*"
   }
 }

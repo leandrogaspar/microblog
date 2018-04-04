@@ -2,6 +2,7 @@ const router = require('express').Router()
 const _ = require('lodash')
 
 const { User } = require('../models/user')
+const { generateToken } = require('../util')
 
 router.post('/', createUser)
 router.get('/:id', getUser)
@@ -11,22 +12,21 @@ router.delete('/:id', deleteUser)
 router.post('/login', login)
 router.post('/logout', logout)
 
-function createUser (req, res) {
-  const body = _.pick(req.body, [
-    'name.firstName',
-    'name.lastName',
-    'birthday',
-    'email',
-    'password'])
-  const user = new User(body)
+async function createUser (req, res) {
+  try {
+    const body = _.pick(req.body, [
+      'name.firstName',
+      'name.lastName',
+      'birthday',
+      'email',
+      'password'])
 
-  user.save()
-    .then(() => {
-      res.status(200).send(user)
-    })
-    .catch((e) => {
-      res.status(400).send(e)
-    })
+    let user = new User(body)
+    user = await user.save()
+    res.status(200).send(user)
+  } catch (e) {
+    res.status(400).send(e)
+  }
 }
 
 function getUser (req, res) {
@@ -44,16 +44,21 @@ function deleteUser (req, res) {
   res.send('todo')
 }
 
-function login (req, res) {
-  const body = _.pick(req.body, ['email', 'password'])
+async function login (req, res) {
+  try {
+    // We only use email and password to auth
+    const body = _.pick(req.body, ['email', 'password'])
 
-  User.findByCredentials(body.email, body.password)
-    .then((user) => {
-      res.status(200).send(user)
-    })
-    .catch((e) => {
-      res.status(401).send()
-    })
+    const user = await User.findByCredentials(body.email, body.password)
+
+    // Generate a new token for the login and send back to user
+    let token = generateToken(user)
+    token = await user.addToken(token)
+
+    res.header('x-auth', token).status(200).send(user)
+  } catch (e) {
+    res.status(401).send()
+  }
 }
 
 function logout (req, res) {

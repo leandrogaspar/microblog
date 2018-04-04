@@ -3,19 +3,24 @@ const request = require('supertest')
 const { nonAddedUsers, users, populateUsers } = require('../seed/users.seed')
 const server = require('../../server')
 
-const API_URL = '/apiv0/users'
+const API_URL = '/apiv0/users/login'
 
-describe('POST /users', () => {
+describe('POST /users/login', () => {
   beforeEach(populateUsers)
 
-  it('returns statusCode 200 with body obj without password field', (done) => {
-    const validUser = nonAddedUsers[0]
+  it('when sucessfull returns the token on header and user on body', (done) => {
+    const validUser = users[0]
+    const requestBody = {
+      email: validUser.email,
+      password: validUser.password
+    }
     request(server)
       .post(API_URL)
-      .send(validUser)
+      .send(requestBody)
       .expect(200)
       .expect((response) => {
         const user = response.body
+        expect(response.headers['x-auth']).toBeTruthy()
         expect(user).toBeDefined()
         expect(user.name).toEqual(validUser.name)
         expect(user.birthday).toBe(validUser.birthday)
@@ -30,12 +35,16 @@ describe('POST /users', () => {
       })
   })
 
-  it('fails with statusCode 400 if email is already in use', (done) => {
+  it('login fails if user doesnt exists', (done) => {
+    const validUser = nonAddedUsers[0]
+    const requestBody = {
+      email: validUser.email,
+      password: validUser.password
+    }
     request(server)
       .post(API_URL)
-      .set('Accept', 'application/json')
-      .send(users[0])
-      .expect(400)
+      .send(requestBody)
+      .expect(401)
       .end((err, res) => {
         if (err) return done.fail(err)
 
@@ -44,13 +53,16 @@ describe('POST /users', () => {
       })
   })
 
-  it('fails with statusCode 400 if email is invalid', (done) => {
-    const validUser = nonAddedUsers[1]
-    validUser.email = 'nfainofina-f,sa'
+  it('login fails when using the wrong password', (done) => {
+    const validUser = users[0]
+    const requestBody = {
+      email: validUser.email,
+      password: validUser.password + ' '
+    }
     request(server)
       .post(API_URL)
-      .send(validUser)
-      .expect(400)
+      .send(requestBody)
+      .expect(401)
       .end((err, res) => {
         if (err) return done.fail(err)
 
@@ -59,31 +71,18 @@ describe('POST /users', () => {
       })
   })
 
-  it('fails with statusCode 400 if birthday is invalid', (done) => {
-    const validUser = nonAddedUsers[2]
-    validUser.birthday = 'nfainofina-f,sa'
+  it('login fails when using the wrong email', (done) => {
+    const validUser = users[0]
+    const requestBody = {
+      email: validUser.email + 'abcd',
+      password: validUser.password
+    }
     request(server)
       .post(API_URL)
-      .send(validUser)
-      .expect(400)
+      .send(requestBody)
+      .expect(401)
       .end((err, res) => {
         if (err) return done.fail(err)
-
-        // todo search the database
-        done()
-      })
-  })
-
-  it('fails with statusCode 400 if password < 8,', (done) => {
-    const validUser = nonAddedUsers[3]
-    validUser.password = '1234567'
-    validUser.email = 'test@test.com'
-    request(server)
-      .post(API_URL)
-      .send(validUser)
-      .expect(400)
-      .end((err, res) => {
-        if (err) return done(err)
 
         // todo search the database
         done()
