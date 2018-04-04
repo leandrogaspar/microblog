@@ -8,7 +8,7 @@
     "test": "export NODE_ENV=test || SET NODE_ENV=test && node ./node_modules/jasmine/bin/jasmine",
     "test-watch": "node ./node_modules/nodemon/bin/nodemon --exec 'npm test'",
     "eslint": "node ./node_modules/eslint/bin/eslint .",
-    "coverage": "node ./node_modules/nyc/bin/nyc npm test"
+    "coverage": "node ./node_modules/nyc/bin/nyc --reporter=lcov npm test"
   },
   "repository": {
     "type": "git",
@@ -20,7 +20,8 @@
     "url": "https://github.com/leandrogaspar/microblog/issues"
   },
   "nyc": {
-    "exclude": "./spec" 
+    "exclude": "./spec",
+    "report-dir": "./coverage"
   },
   "homepage": "https://github.com/leandrogaspar/microblog#readme",
   "dependencies": {
