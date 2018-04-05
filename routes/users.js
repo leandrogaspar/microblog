@@ -27,7 +27,7 @@ async function createUser (req, res) {
     user = await user.save()
     res.status(200).send(user)
   } catch (e) {
-    res.status(400).send(e)
+    res.status(400).send()
   }
 }
 
@@ -35,7 +35,7 @@ async function getUser (req, res) {
   try {
     const id = req.params.id
 
-    // Common user, at least send an valid id :)
+    // For invalid ids we don't want regular 404
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).send()
 
     const user = await User.findById(id)
@@ -44,7 +44,7 @@ async function getUser (req, res) {
 
     res.status(200).send(user)
   } catch (e) {
-    res.status(500).send(e)
+    res.status(500).send()
   }
 }
 
@@ -53,9 +53,21 @@ function updateUser (req, res) {
   res.send('todo')
 }
 
-function deleteUser (req, res) {
-  console.log(req)
-  res.send('todo')
+async function deleteUser (req, res) {
+  try {
+    const id = req.params.id
+
+    // For invalid ids we don't want regular 404
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(400).send()
+
+    const user = await User.findByIdAndRemove(id)
+    // Todo: define if 404 will be really send in this case
+    if (!user) return res.status(404).send()
+
+    res.status(200).send(user)
+  } catch (e) {
+    res.status(500).send()
+  }
 }
 
 async function login (req, res) {
