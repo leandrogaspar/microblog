@@ -48,13 +48,17 @@ async function login (req, res) {
   try {
     // We only use email and password to auth
     const body = _.pick(req.body, ['email', 'password'])
+    if(!body.email) return res.status(400).send('Missing email field')
+    if(!body.password) return res.status(400).send('Missing password field')
 
     const user = await User.findByCredentials(body.email, body.password)
+    if(!user) throw new Error('Invalid user email/password')
 
-    // Generate a new token for the login and send back to user
+    // Generate a new token and save to db
     let token = generateToken(user)
     token = await user.addToken(token)
 
+    // Send the user and token back
     res.header('x-auth', token).status(200).send(user)
   } catch (e) {
     res.status(401).send()

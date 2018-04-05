@@ -45,6 +45,9 @@ describe('POST /users/login', () => {
       .post(API_URL)
       .send(requestBody)
       .expect(401)
+      .expect((response) => {
+        expect(response.headers['x-auth']).toBeUndefined()
+      })
       .end((err, res) => {
         if (err) return done.fail(err)
 
@@ -63,6 +66,9 @@ describe('POST /users/login', () => {
       .post(API_URL)
       .send(requestBody)
       .expect(401)
+      .expect((response) => {
+        expect(response.headers['x-auth']).toBeUndefined()
+      })
       .end((err, res) => {
         if (err) return done.fail(err)
 
@@ -81,10 +87,45 @@ describe('POST /users/login', () => {
       .post(API_URL)
       .send(requestBody)
       .expect(401)
+      .expect((response) => {
+        expect(response.headers['x-auth']).toBeUndefined()
+      })
       .end((err, res) => {
         if (err) return done.fail(err)
 
         // todo search the database
+        done()
+      })
+  })
+
+  it('login fails if email is not sent', (done) => {
+    const requestBody = { password: 'abcd1234' }
+    request(server)
+      .post(API_URL)
+      .send(requestBody)
+      .expect(400)
+      .expect((response) => {
+        expect(response.headers['x-auth']).toBeUndefined()
+      })
+      .end((err, res) => {
+        if (err) return done.fail(err)
+
+        done()
+      })
+  })
+
+  it('login fails if password is not sent', (done) => {
+    const requestBody = { email: 'abcd1234' }
+    request(server)
+      .post(API_URL)
+      .send(requestBody)
+      .expect(400)
+      .expect((response) => {
+        expect(response.headers['x-auth']).toBeUndefined()
+      })
+      .end((err, res) => {
+        if (err) return done.fail(err)
+
         done()
       })
   })

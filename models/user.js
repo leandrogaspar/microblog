@@ -100,13 +100,13 @@ UserSchema.statics.findByCredentials = async function (email, password) {
   const User = this
 
   const user = await User.findOne({ email })
-  if (!user) throw new Error('Invalid email/password')
+  if (!user) return null;
 
   const passwordMatch = await comparePassword(password, user.password)
   if (passwordMatch) {
     return user
   } else {
-    throw new Error('Invalid email/password')
+    return null;
   }
 }
 
