@@ -79,7 +79,7 @@ UserSchema.methods.removeToken = function (token) {
   })
 }
 
-UserSchema.static.findByToken = function (token) {
+UserSchema.statics.findByToken = function (token) {
   const User = this
 
   var decodedToken
@@ -90,23 +90,20 @@ UserSchema.static.findByToken = function (token) {
     return Promise.reject(e)
   }
 
-  return User.findOne({
-    '_id': decodedToken._id,
-    'tokens.token': token
-  })
+  return User.findById(decodedToken._id)
 }
 
 UserSchema.statics.findByCredentials = async function (email, password) {
   const User = this
 
   const user = await User.findOne({ email })
-  if (!user) return null;
+  if (!user) return null
 
   const passwordMatch = await comparePassword(password, user.password)
   if (passwordMatch) {
     return user
   } else {
-    return null;
+    return null
   }
 }
 
