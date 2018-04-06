@@ -50,7 +50,7 @@ const UserSchema = new mongoose.Schema({
 UserSchema.methods.toJSON = function () {
   const user = this
 
-  return _.pick(user, ['name', 'birthday', 'email'])
+  return _.pick(user, ['name', 'birthday', 'email', '_id'])
 }
 
 UserSchema.methods.addToken = function (token) {

@@ -1,5 +1,6 @@
 const request = require('supertest')
 
+const { User } = require('../../models/user')
 const { nonAddedUsers, users, populateUsers } = require('../seed/users.seed')
 const server = require('../../server')
 
@@ -10,12 +11,14 @@ describe('POST /users', () => {
 
   it('returns statusCode 200 with body obj without password field', (done) => {
     const validUser = nonAddedUsers[0]
+    var receivedId
     request(server)
       .post(API_URL)
       .send(validUser)
       .expect(200)
       .expect((response) => {
         const user = response.body
+        receivedId = user._id
         expect(user).toBeDefined()
         expect(user.name).toEqual(validUser.name)
         expect(user.birthday).toBe(validUser.birthday)
@@ -25,8 +28,18 @@ describe('POST /users', () => {
       .end((err, res) => {
         if (err) return done.fail(err)
 
-        // todo search the database
-        done()
+        User.findById(receivedId)
+          .then((user) => {
+            expect(user).toBeDefined()
+            expect(user.name.firstName).toEqual(validUser.name.firstName)
+            expect(user.name.lastName).toEqual(validUser.name.lastName)
+            expect(user.birthday).toBe(validUser.birthday)
+            expect(user.email).toBe(validUser.email)
+            done()
+          })
+          .catch((e) => {
+            done.fail(e)
+          })
       })
   })
 
@@ -39,7 +52,6 @@ describe('POST /users', () => {
       .end((err, res) => {
         if (err) return done.fail(err)
 
-        // todo search the database
         done()
       })
   })
@@ -54,7 +66,6 @@ describe('POST /users', () => {
       .end((err, res) => {
         if (err) return done.fail(err)
 
-        // todo search the database
         done()
       })
   })
@@ -69,7 +80,6 @@ describe('POST /users', () => {
       .end((err, res) => {
         if (err) return done.fail(err)
 
-        // todo search the database
         done()
       })
   })
@@ -85,7 +95,6 @@ describe('POST /users', () => {
       .end((err, res) => {
         if (err) return done(err)
 
-        // todo search the database
         done()
       })
   })
